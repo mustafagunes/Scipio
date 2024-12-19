@@ -12,14 +12,22 @@ struct FrameworkProducer {
     private let buildOptionsMatrix: [String: BuildOptions]
     private let cachePolicies: [Runner.Options.CachePolicy]
     private let overwrite: Bool
+    private let cacheBuildsEnabled: Bool
     private let outputDir: URL
     private let fileSystem: any FileSystem
     private let toolchainEnvironment: ToolchainEnvironment?
 
     private var shouldGenerateVersionFile: Bool {
         // cache is not disabled
-        guard !cachePolicies.isEmpty else {
-            return false
+//        guard !cachePolicies.isEmpty else {
+//            logger.warning("Deneme 1", metadata: .color(.yellow))
+//            logger.warning("Deneme 1 Result: \(cachePolicies)", metadata: .color(.yellow))
+//            return false
+//        }
+        
+        if baseBuildOptions.cacheBuildsEnabled {
+            logger.warning("Deneme 2", metadata: .color(.yellow))
+            return true
         }
 
         // Enable only in prepare mode
@@ -35,6 +43,7 @@ struct FrameworkProducer {
         buildOptionsMatrix: [String: BuildOptions],
         cachePolicies: [Runner.Options.CachePolicy],
         overwrite: Bool,
+        cacheBuildsEnabled: Bool,
         outputDir: URL,
         toolchainEnvironment: ToolchainEnvironment? = nil,
         fileSystem: any FileSystem = localFileSystem
@@ -44,6 +53,7 @@ struct FrameworkProducer {
         self.buildOptionsMatrix = buildOptionsMatrix
         self.cachePolicies = cachePolicies
         self.overwrite = overwrite
+        self.cacheBuildsEnabled = cacheBuildsEnabled
         self.outputDir = outputDir
         self.toolchainEnvironment = toolchainEnvironment
         self.fileSystem = fileSystem
@@ -152,7 +162,7 @@ struct FrameworkProducer {
         for chunk in chunked {
             await withTaskGroup(of: CacheSystem.CacheTarget?.self) { group in
                 for target in chunk {
-                    group.addTask { [outputDir, fileSystem] in
+                    group.addTask { [outputDir, fileSystem, baseBuildOptions] in
                         do {
                             let product = target.buildProduct
                             let frameworkName = product.frameworkName
@@ -187,6 +197,25 @@ struct FrameworkProducer {
             }
         }
         return validFrameworks
+    }
+    
+//    logger.warning("⚠️ Existing \(frameworkName) is outdated.", metadata: .color(.yellow))
+//    
+//    if !baseBuildOptions.cacheBuildsEnabled {
+//        logger.info("🗑️ Delete \(frameworkName)", metadata: .color(.red))
+//        try fileSystem.removeFileTree(outputPath.absolutePath)
+//    }
+    
+    private func removeCacheArtifactIfNeeded(
+        with frameworkName: String,
+        outputPath: URL
+    ) throws {
+        guard !baseBuildOptions.cacheBuildsEnabled else {
+            logger.warning("⚠️ Existing \(frameworkName) is outdated.", metadata: .color(.yellow))
+            return 
+        }
+        logger.info("🗑️ Delete \(frameworkName)", metadata: .color(.red))
+        try fileSystem.removeFileTree(outputPath.absolutePath)
     }
 
     private func restoreAllAvailableCachesIfNeeded(
@@ -333,7 +362,7 @@ struct FrameworkProducer {
                 outputDirectory: outputDir,
                 fileSystem: fileSystem
             )
-            try binaryExtractor.extract(of: binaryTarget, overwrite: overwrite)
+            try binaryExtractor.extract(of: binaryTarget, overwrite: overwrite, cacheBuildsEnabled: cacheBuildsEnabled)
             logger.info("✅ Copy \(binaryTarget.c99name).xcframework", metadata: .color(.green))
         default:
             fatalError("Unexpected target type \(product.target.type)")
@@ -354,6 +383,7 @@ struct FrameworkProducer {
             try await cacheSystem.generateVersionFile(for: target)
         } catch {
             logger.warning("⚠️ Could not create VersionFile. This framework will not be cached.", metadata: .color(.yellow))
+            logger.warning("⚠️ error: \(error.localizedDescription)", metadata: .color(.yellow))
         }
     }
 }

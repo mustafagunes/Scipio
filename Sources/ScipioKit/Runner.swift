@@ -100,6 +100,7 @@ public struct Runner {
             buildOptionsMatrix: buildOptionsMatrix,
             cachePolicies: options.cachePolicies,
             overwrite: options.overwrite,
+            cacheBuildsEnabled: options.cacheBuildsEnabled,
             outputDir: outputDir,
             toolchainEnvironment: options.toolchainEnvironment
         )
@@ -125,6 +126,7 @@ extension Runner {
             public var isSimulatorSupported: Bool
             public var isDebugSymbolsEmbedded: Bool
             public var frameworkType: FrameworkType
+            public var cacheBuildsEnabled: Bool
             public var extraFlags: ExtraFlags?
             public var extraBuildParameters: [String: String]?
             public var enableLibraryEvolution: Bool
@@ -140,6 +142,7 @@ extension Runner {
                 isSimulatorSupported: Bool = false,
                 isDebugSymbolsEmbedded: Bool = false,
                 frameworkType: FrameworkType = .dynamic,
+                cacheBuildsEnabled: Bool = false,
                 extraFlags: ExtraFlags? = nil,
                 extraBuildParameters: [String: String]? = nil,
                 enableLibraryEvolution: Bool = false,
@@ -151,6 +154,7 @@ extension Runner {
                 self.isSimulatorSupported = isSimulatorSupported
                 self.isDebugSymbolsEmbedded = isDebugSymbolsEmbedded
                 self.frameworkType = frameworkType
+                self.cacheBuildsEnabled = cacheBuildsEnabled
                 self.extraFlags = extraFlags
                 self.extraBuildParameters = extraBuildParameters
                 self.enableLibraryEvolution = enableLibraryEvolution
@@ -264,6 +268,7 @@ extension Runner {
         public var shouldOnlyUseVersionsFromResolvedFile: Bool
         public var cachePolicies: [CachePolicy]
         public var overwrite: Bool
+        public var cacheBuildsEnabled: Bool
         public var verbose: Bool
         public var toolchainEnvironment: ToolchainEnvironment?
 
@@ -273,6 +278,7 @@ extension Runner {
             shouldOnlyUseVersionsFromResolvedFile: Bool = false,
             cachePolicies: [CachePolicy] = [.project],
             overwrite: Bool = false,
+            cacheBuildsEnabled: Bool = false,
             verbose: Bool = false,
             toolchainEnvironment: ToolchainEnvironment? = nil
         ) {
@@ -283,6 +289,7 @@ extension Runner {
             self.shouldOnlyUseVersionsFromResolvedFile = shouldOnlyUseVersionsFromResolvedFile
             self.cachePolicies = cachePolicies
             self.overwrite = overwrite
+            self.cacheBuildsEnabled = cacheBuildsEnabled
             self.verbose = verbose
             self.toolchainEnvironment = toolchainEnvironment
         }
@@ -326,6 +333,7 @@ extension Runner.Options.BuildOptions {
             buildConfiguration: buildConfiguration,
             isDebugSymbolsEmbedded: isDebugSymbolsEmbedded,
             frameworkType: frameworkType,
+            cacheBuildsEnabled: cacheBuildsEnabled,
             sdks: Set(sdks),
             extraFlags: extraFlags,
             extraBuildParameters: extraBuildParameters,

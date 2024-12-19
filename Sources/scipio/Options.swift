@@ -24,6 +24,10 @@ struct BuildOptionGroup: ParsableArguments {
     @Flag(name: .customLong("support-simulators"),
           help: "Whether also building for simulators of each SDKs or not.")
     var supportSimulators = false
+    
+    @Flag(name: .customLong("cache-builds"),
+          help: "Save and reuse successfully built frameworks to speed up subsequent builds. Failed frameworks will be rebuilt on next attempt.")
+    var cacheBuildsEnabled = false
 
     @Flag(name: [.customLong("static")],
           help: "Whether generated frameworks are Static Frameworks or not")

@@ -8,6 +8,7 @@ struct BuildOptions: Hashable, Codable, Sendable {
         buildConfiguration: BuildConfiguration,
         isDebugSymbolsEmbedded: Bool,
         frameworkType: FrameworkType,
+        cacheBuildsEnabled: Bool,
         sdks: Set<SDK>,
         extraFlags: ExtraFlags?,
         extraBuildParameters: ExtraBuildParameters?,
@@ -18,6 +19,7 @@ struct BuildOptions: Hashable, Codable, Sendable {
         self.buildConfiguration = buildConfiguration
         self.isDebugSymbolsEmbedded = isDebugSymbolsEmbedded
         self.frameworkType = frameworkType
+        self.cacheBuildsEnabled = cacheBuildsEnabled
         self.sdks = OrderedSet(sdks.sorted(by: { $0.rawValue < $1.rawValue }))
         self.extraFlags = extraFlags
         self.extraBuildParameters = extraBuildParameters
@@ -29,6 +31,7 @@ struct BuildOptions: Hashable, Codable, Sendable {
     let buildConfiguration: BuildConfiguration
     let isDebugSymbolsEmbedded: Bool
     let frameworkType: FrameworkType
+    let cacheBuildsEnabled: Bool
     let sdks: OrderedSet<SDK>
     let extraFlags: ExtraFlags?
     let extraBuildParameters: ExtraBuildParameters?

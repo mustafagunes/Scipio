@@ -46,6 +46,7 @@ extension Runner {
             isSimulatorSupported: buildOptions.supportSimulators,
             isDebugSymbolsEmbedded: buildOptions.embedDebugSymbols,
             frameworkType: buildOptions.frameworkType,
+            cacheBuildsEnabled: buildOptions.cacheBuildsEnabled,
             enableLibraryEvolution: buildOptions.shouldEnableLibraryEvolution
         )
         let runnerOptions = Runner.Options(
@@ -53,6 +54,7 @@ extension Runner {
             shouldOnlyUseVersionsFromResolvedFile: buildOptions.shouldOnlyUseVersionsFromResolvedFile,
             cachePolicies: Self.cachePolicies(from: commandType),
             overwrite: buildOptions.overwrite,
+            cacheBuildsEnabled: buildOptions.cacheBuildsEnabled,
             verbose: globalOptions.verbose
         )
         self.init(mode: commandType.mode, options: runnerOptions)
